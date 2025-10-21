@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+        :root{ --primary-color: #667eea;
+            --primary-dark: #252837;
+            --secondary-color: #121111;
+            --text-primary: #1a202c;
+            --text-secondary: #4a5568;
+            --text-muted: #a0aec0;
+            --border-color: #e2e8f0;
+            --error-color: #f56565;
+            --success-color: #48bb78;
+            --background: #ffffff;
+            --surface: #f7fafc;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Poppins','Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+           min-height: 70vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .task_pane {
+            width: 350px;
+            background: var(--background);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            padding: 24px 20px;
+            color: white;
+        }
+
+        .header_title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            letter-spacing: -0.025em;
+        }
+
+        /* Content */
+        .content {
+            padding: 24px 20px 28px;
+        }
+
+        /* Form*/
+        .form_group {
+        margin-bottom: 20px;
+        }
+
+
+        .form_group:last-of-type {
+            margin-bottom: 24px;
+        }
+
+        .form_label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            letter-spacing: -0.01em;
+        }
+
+        .form {
+            display: none;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        /* Segmented Control */
+        .segmented_control {
+            display: flex;
+            background: var(--surface);
+            border-radius: var(--radius-md);
+            padding: 4px;
+            gap: 4px;
+            border: 1px solid var(--border-color);
+        }
+
+        .segment_option {
+            flex: 1;
+            padding: 10px 8px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 500;
+            color: #121111;
+            color: var(--text-secondary);
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+
+        .segment_option:hover:not(.active) {
+            background: rgba(102, 126, 234, 0.08);
+            color: var(--text-primary);
+        }
+
+        .segment_option:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        .segment_option.active {
+            background: white;
+            color: var(--secondary-color);
+            box-shadow: var(--shadow-sm);
+            font-weight: 600;
+        }
+
+        /* Select Input */
+        .input {
+            position: relative;
+        }
+
+        .select_input,
+        .text_input {
+            width: 89%;
+            padding: 12px 16px;
+            font-size: 14px;
+            font-family: inherit;
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            background: var(--background);
+            outline: none;
+            transition: var(--transition);
+            appearance: none;
+        }
+
+        .select_input {
+            width: 100%;
+            padding-right: 40px;
+            cursor: pointer;
+        }
+
+        .select_input:hover,
+        .text_input:hover {
+            border-color: var(--text-muted);
+        }
+
+        .select_input:focus,
+        .text_input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .select_input:disabled,
+        .text_input:disabled {
+            background: var(--surface);
+            color: var(--text-muted);
+            cursor: not-allowed;
+        }
+
+        .text_input::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* Select Icon */
+        .select_icon {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
+            font-size: 12px;
+        }
+
+        /* Input States */
+        .form_group.error .select_input,
+        .form_group.error .text_input {
+            border-color: var(--error-color);
+        }
+
+        .form_group.error .form_label {
+            color: var(--error-color);
+        }
+
+        .error_message {
+            display: none;
+            font-size: 12px;
+            color: var(--error-color);
+            margin: 10px 0px 20px 0px;
+        }
+
+        .form_group.error .error_message {
+            display: block;
+        }
+
+        /* Primary Button */
+        .btn_primary {
+            width: 100%;
+            padding: 14px 20px;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: inherit;
+            color: white;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+            margin-top: auto;
+        }
+
+        .btn_primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.35);
+        }
+
+        .btn_primary:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .btn_primary:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        .btn_primary:disabled {
+            background: var(--text-muted);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Loading State */
+        .loading_container {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .loading_container.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid var(--surface);
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 12px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading_text {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Alert Messages */
+        .alert {
+            display: none;
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            margin-top: 16px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert.show {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .alert--success {
+            background: #e6fffa;
+            color: #234e52;
+            border: 1px solid #b2f5ea;
+        }
+
+        .alert--error {
+            background: #fff5f5;
+            color: #742a2a;
+            border: 1px solid #feb2b2;
+        }
+
+        .alert__icon {
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        /* Accessibility */
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            margin: -1px;
+            padding: 0;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+
+        /* Responsive adjustments for very small screens */
+        @media (max-width: 380px) {
+            .task-pane {
+                width: 100%;
+            }
+        }
+        .segment_option.shake {
+  animation: shake 0.3s ease;
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-3px); }
+  50% { transform: translateX(3px); }
+  75% { transform: translateX(-3px); }
+  100% { transform: translateX(0); }
+}
+
+
+    </style>
+</head>
+
+<body>
+    <main class="task_pane" role="main">
+        <header class="header" role="banner">
+            <h1 class="header_title">Financial Report Generator</h1>
+        </header>
+        <div class="content">
+            <form id="report_form" novalidate aria-label="Report generation form" role="form">
+
+                <!-- Report Type  -->
+                <div class="form_group" id="reportTypeGroup">
+                    <label class="form-label" id="reportTypeLabel" for="reportTypeLabel"> Report Type </label>
+                    <div class="segmented_control" role="radiogroup" aria-labelledby="reportTypeLabel">
+                        <button type="button" class="segment_option" data-value="P&L" role="radio"
+                            aria-checked="false" tabindex="0">
+                            P&L
+                        </button>
+
+                        <button type="button" class="segment_option" data-value="Balance Sheet" role="radio"
+                            aria-checked="false" tabindex="-1">
+                            Balance Sheet
+                        </button>
+
+                    <button type="button" class="segment_option" data-value="Cash Flow" role="radio"
+                        aria-checked="true" tabindex="-1">
+                        Cash Flow
+                    </button>
+                </div>
+                <span class="error_message" role="alert">Please select a report type</span>
+        </div>
+
+        <!-- Report Year -->
+         <div class="form_group" id="yearGroup">
+            <label for="reportYear" class="form_label">Reporting Year</label>
+            <div class="input_box">
+                <select name="" id="reportYear" class="select_input" aria-describedby="year" aria-required="true">
+                    <option value="">Select Year</option>
+
+                </select>
+            </div>
+         </div>
+
+         <!-- Client Name -->
+          <div class="form_group" id="clientGroup">
+            <label for="clientName" class="form_label"> Client Name / ID</label>
+            <input type="text"
+            id="clientName" 
+            class="text_input" 
+            placeholder="e.g Jane Doe/ JDID"
+            aria-describedby="client"
+            aria-required="true"
+            aria-invalid="false"
+            autocomplete="off"
+            maxlength="100">
+            <span class="form" id="client">Enter full name or ID</span>
+            <span class="error_message" role="alert">Please enter client name or ID</span>
+               </div> 
+            <!-- Submit Button -->
+             <button type="submit"
+             class="btn_primary"
+             id="generateBtn"
+             aria-label="Financial Report generate button"> Generate Report
+             </button>
+
+             <!-- Loading State  -->
+<div class="loading_container" id="loadingState" aria-live="polite" aria-atomic="true">
+                    <div class="spinner" role="status">
+                        <span class="visually_hidden"></span>
+                    </div>
+                    <p class="loading_text">Generating your report...</p>
+                </div>
+
+                <!-- Alert Messages  -->
+                  <div class="alert alert--success" id="successAlert" role="alert" aria-live="polite">
+                    <span class="alert__icon">✓</span>
+                    <span id="successMessage"></span>
+                </div>
+                <div class="alert alert--error" id="errorAlert" role="alert" aria-live="assertive">
+                    <span class="alert__icon">✕</span>
+                    <span id="errorMessage"></span>
+                </div>
+          </div>
+        </form>
+        </div>
+          <script src="./index.js"></script>
+    </main>
+</body>
+
+</html>

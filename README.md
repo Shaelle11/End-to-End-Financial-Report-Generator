@@ -29,7 +29,7 @@ Primary Action Button: “Generate Report”
 Bonus Feature: Loading Indicator & Success/Error Alerts (aria-live): Displays clear feedback during processing
 
 ## Part 2 – Agent Logic & Frontend-to-Backend Interface (JavaScript)
-📦 Function: prepareAgentRequest()
+Function: prepareAgentRequest()
 
 This function collects user inputs, validates all required fields, and returns a structured JSON payload ready for backend processing.
 
@@ -72,7 +72,7 @@ using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using System.IO;
 
-🧾 Implementation: CreateSimpleReport(string clientName, string reportType)
+Implementation: CreateSimpleReport(string clientName, string reportType)
 public static void CreateSimpleReport(string clientName, string reportType)
 {
     string filePath = "GeneratedReport.docx";

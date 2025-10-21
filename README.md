@@ -5,6 +5,7 @@ Kokoodi Technical Assessment – End-to-End Financial Report Generator
 Applicant: Nanji Emmanuella
 Role: Software Intern – Microsoft Office Automation & Full-Stack Support
 Submission Date: October 21, 2025
+
 Submission Deadline: October 22, 2025
 
 Overview

@@ -22,6 +22,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 
-app.Urls.Add("http://localhost:5500");
+app.Urls.Add("https://shaelle11.github.io/End-to-End-Financial-Report-Generator/");
 
 app.Run();
+

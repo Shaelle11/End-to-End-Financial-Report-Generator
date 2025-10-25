@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const successMessage = document.getElementById("successMessage");
   const errorMessage = document.getElementById("errorMessage");
 
-  // 🔹 Populate reporting years dynamically
+  // Populate reporting years dynamically
   const currentYear = new Date().getFullYear();
   for (let y = currentYear; y >= currentYear - 5; y--) {
     const option = document.createElement("option");
@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
     reportYearSelect.appendChild(option);
   }
 
-  // 🔹 Handle report type toggle
+  // Handle report type toggle
   reportTypeButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
       reportTypeButtons.forEach((b) => b.classList.remove("active"));
@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // 🔹 Keyboard & accessibility support for report type buttons
+  // Keyboard & accessibility support for report type buttons
   const options = document.querySelectorAll('.segment_option');
   options.forEach((btn, index) => {
     btn.addEventListener('click', () => {
@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // ✅ Function to prepare and validate the request
+  // Function to prepare and validate the request
   function prepareAgentRequest() {
     const activeBtn = document.querySelector(".segment_option.active");
     const reportType = activeBtn ? activeBtn.dataset.value : "";
@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return { clientName, reportType, reportYear, timestamp: new Date().toISOString() };
   }
 
-  // 🚀 Handle form submission + backend request
+  // Handle form submission + backend request
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     successAlert.classList.remove("show");
@@ -83,8 +83,8 @@ document.addEventListener("DOMContentLoaded", () => {
       loadingState.classList.add("active");
       console.log("Sending payload:", payload);
 
-      // 🔹 Call your C# backend API here:
-      const response = await fetch("https://localhost:5001/api/report/generate", {
+      // Call your C# backend API here:
+      const response = await fetch("https://localhost:5500/api/report/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)

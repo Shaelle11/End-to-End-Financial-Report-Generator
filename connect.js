@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       console.log("Sending payload:", data);
 
-      const response = await fetch("http://localhost:5000/api/report/generate", {
+      const response = await fetch("http://localhost:5500/api/report/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -93,3 +93,4 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+

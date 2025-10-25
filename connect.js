@@ -84,7 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log("Sending payload:", payload);
 
       // Call your C# backend API here:
-      const response = await fetch("https://localhost:5500/api/report/generate", {
+      const response = await fetch("http://localhost:5500/api/report/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
@@ -103,3 +103,4 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+

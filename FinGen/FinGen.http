@@ -1,0 +1,6 @@
+@FinGen_HostAddress = http://localhost:5229
+
+GET {{FinGen_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const successMessage = document.getElementById("successMessage");
   const errorMessage = document.getElementById("errorMessage");
 
-  // Populate reporting years dynamically
+  // Populate years dynamically
   const currentYear = new Date().getFullYear();
   for (let y = currentYear; y >= currentYear - 5; y--) {
     const option = document.createElement("option");
@@ -27,34 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Keyboard & accessibility support for report type buttons
-  const options = document.querySelectorAll('.segment_option');
-  options.forEach((btn, index) => {
-    btn.addEventListener('click', () => {
-      options.forEach(o => {
-        o.classList.remove('active');
-        o.setAttribute('aria-checked', 'false');
-        o.setAttribute('tabindex', '-1');
-      });
-      btn.classList.add('active');
-      btn.setAttribute('aria-checked', 'true');
-      btn.setAttribute('tabindex', '0');
-      btn.focus();
-    });
-
-    // Keyboard navigation
-    btn.addEventListener('keydown', (e) => {
-      let newIndex = index;
-      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') newIndex = (index + 1) % options.length;
-      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') newIndex = (index - 1 + options.length) % options.length;
-      if (newIndex !== index) {
-        options[newIndex].click();
-        e.preventDefault();
-      }
-    });
-  });
-
-  // Function to prepare and validate the request
+  // ✅ Function to prepare and validate request
   function prepareAgentRequest() {
     const activeBtn = document.querySelector(".segment_option.active");
     const reportType = activeBtn ? activeBtn.dataset.value : "";
@@ -64,42 +37,59 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!reportType) {
       reportTypeButtons.forEach((b) => b.classList.add("shake"));
       setTimeout(() => reportTypeButtons.forEach((b) => b.classList.remove("shake")), 400);
-      throw new Error("Please select a report type.");
+      throw new Error("Please select a report type before generating.");
     }
+
     if (!reportYear) throw new Error("Please select a reporting year.");
     if (!clientName) throw new Error("Please enter the client name or ID.");
 
-    return { clientName, reportType, reportYear, timestamp: new Date().toISOString() };
+    return {
+      companyName: clientName,
+      reportYear: parseInt(reportYear),
+      totalRevenue: Math.floor(Math.random() * 1_000_000), // demo values
+      totalExpense: Math.floor(Math.random() * 500_000),
+      netProfit: Math.floor(Math.random() * 400_000),
+    };
   }
 
-  // Handle form submission + backend request
+  // 🧠 Submit and actually generate report
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
+
     successAlert.classList.remove("show");
     errorAlert.classList.remove("show");
 
     try {
-      const payload = prepareAgentRequest();
+      const data = prepareAgentRequest();
       loadingState.classList.add("active");
-      console.log("Sending payload:", payload);
 
-      // Call your C# backend API here:
-      const response = await fetch("http://localhost:5500/api/report/generate", {
+      console.log("Sending payload:", data);
+
+      const response = await fetch("http://localhost:5000/api/report/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(data),
       });
 
-      if (!response.ok) throw new Error("Server returned an error. Please check backend logs.");
-      const result = await response.json();
+      if (!response.ok) throw new Error("Error generating report!");
 
-      loadingState.classList.remove("active");
-      successMessage.textContent = result.message || "Report generated successfully!";
+      // Convert response to Blob and trigger download
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "FinancialReport.docx";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      successMessage.textContent = `Report for ${data.companyName} (${data.reportYear}) successfully generated.`;
       successAlert.classList.add("show");
     } catch (err) {
-      loadingState.classList.remove("active");
       errorMessage.textContent = err.message;
       errorAlert.classList.add("show");
+    } finally {
+      loadingState.classList.remove("active");
     }
   });
 });

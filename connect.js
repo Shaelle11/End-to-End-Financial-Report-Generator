@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const successMessage = document.getElementById("successMessage");
   const errorMessage = document.getElementById("errorMessage");
 
-  // Populate years dynamically
+  // Dynamically populate recent years
   const currentYear = new Date().getFullYear();
   for (let y = currentYear; y >= currentYear - 5; y--) {
     const option = document.createElement("option");
@@ -27,32 +27,21 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // ✅ Function to prepare and validate request
+  // ✅ Prepare JSON payload
   function prepareAgentRequest() {
     const activeBtn = document.querySelector(".segment_option.active");
     const reportType = activeBtn ? activeBtn.dataset.value : "";
     const reportYear = reportYearSelect.value.trim();
     const clientName = clientNameInput.value.trim();
 
-    if (!reportType) {
-      reportTypeButtons.forEach((b) => b.classList.add("shake"));
-      setTimeout(() => reportTypeButtons.forEach((b) => b.classList.remove("shake")), 400);
-      throw new Error("Please select a report type before generating.");
-    }
-
+    if (!reportType) throw new Error("Please select a report type.");
     if (!reportYear) throw new Error("Please select a reporting year.");
     if (!clientName) throw new Error("Please enter the client name or ID.");
 
-    return {
-      companyName: clientName,
-      reportYear: parseInt(reportYear),
-      totalRevenue: Math.floor(Math.random() * 1_000_000), // demo values
-      totalExpense: Math.floor(Math.random() * 500_000),
-      netProfit: Math.floor(Math.random() * 400_000),
-    };
+    return { reportType, reportYear, clientName };
   }
 
-  // 🧠 Submit and actually generate report
+  // 🧠 Submit and generate report
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -60,30 +49,29 @@ document.addEventListener("DOMContentLoaded", () => {
     errorAlert.classList.remove("show");
 
     try {
-      const data = prepareAgentRequest();
+      const payload = prepareAgentRequest();
       loadingState.classList.add("active");
-
-      console.log("Sending payload:", data);
+      console.log("Sending payload:", payload);
 
       const response = await fetch("http://localhost:5500/api/report/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify(payload),
       });
 
-      if (!response.ok) throw new Error("Error generating report!");
+      if (!response.ok) throw new Error("Error generating report.");
 
-      // Convert response to Blob and trigger download
+      // Get the Word file and download it
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "FinancialReport.docx";
+      a.download = `FinancialReport_${payload.clientName}_${payload.reportType}_${payload.reportYear}.docx`;
       document.body.appendChild(a);
       a.click();
       a.remove();
 
-      successMessage.textContent = `Report for ${data.companyName} (${data.reportYear}) successfully generated.`;
+      successMessage.textContent = `Report for ${payload.clientName} (${payload.reportType}, ${payload.reportYear}) successfully generated.`;
       successAlert.classList.add("show");
     } catch (err) {
       errorMessage.textContent = err.message;
@@ -91,5 +79,31 @@ document.addEventListener("DOMContentLoaded", () => {
     } finally {
       loadingState.classList.remove("active");
     }
+  });
+
+  // Accessibility & keyboard navigation for toggle buttons
+  const options = document.querySelectorAll(".segment_option");
+  options.forEach((btn, index) => {
+    btn.addEventListener("click", () => {
+      options.forEach((o) => {
+        o.classList.remove("active");
+        o.setAttribute("aria-checked", "false");
+        o.setAttribute("tabindex", "-1");
+      });
+      btn.classList.add("active");
+      btn.setAttribute("aria-checked", "true");
+      btn.setAttribute("tabindex", "0");
+      btn.focus();
+    });
+
+    btn.addEventListener("keydown", (e) => {
+      let newIndex = index;
+      if (e.key === "ArrowRight" || e.key === "ArrowDown") newIndex = (index + 1) % options.length;
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") newIndex = (index - 1 + options.length) % options.length;
+      if (newIndex !== index) {
+        options[newIndex].click();
+        e.preventDefault();
+      }
+    });
   });
 });
